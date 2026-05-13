@@ -1,12 +1,21 @@
 <template>
   <div>
-    <h2 class="text-xl font-semibold mb-4">Таблица устройств</h2>
-    <div class="bg-white rounded-lg shadow p-6">
-      <p class="text-gray-600">Загрузка...</p>
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold text-gray-900">Сетевые устройства</h2>
+    </div>
+
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+      <DeviceTable @view-details="handleViewDetails" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-// Пока заглушка
+import DeviceTable from '@/components/DeviceTable.vue';
+import type { Device } from '@/types/device.types';
+
+function handleViewDetails(device: Device) {
+  console.log('Просмотр деталей:', device);
+}
 </script>
+
