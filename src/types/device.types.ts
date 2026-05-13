@@ -11,5 +11,5 @@ export interface Device {
     lastSeen: Date
     model: string
     firmware: string
-    uptime: number 
+    uptime: number
 }
