@@ -50,7 +50,7 @@
             <select v-else v-model="editedDevice.status" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
               <option value="online">Онлайн</option>
               <option value="offline">Оффлайн</option>
-              <option value="warning">Предупреждение</option>
+              <option value="error">Ошибка</option>
             </select>
           </div>
 
@@ -177,7 +177,7 @@ function getStatusLabel(status: DeviceStatus): string {
   const labels = {
     online: 'Онлайн',
     offline: 'Оффлайн',
-    warning: 'Предупреждение',
+    error: 'Ошибка',
   };
   return labels[status];
 }

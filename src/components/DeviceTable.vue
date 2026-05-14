@@ -83,7 +83,7 @@
           <button
               v-for="page in visiblePages"
               :key="page"
-              @click="store.setCurrentPage(page)"
+              @click="store.setCurrentPage(Number(page))"
               :class="[
           'w-8 h-8 rounded-lg text-sm font-medium',
           store.currentPage === page
@@ -169,17 +169,17 @@ function formatDate(date: Date): string {
 }
 
 
-const visiblePages = computed(() => {
-  const total = store.totalPages;
-  const current = store.currentPage;
+const visiblePages = computed<(number | string)[]>(() => {
+  const total = Number(store.totalPages);
+  const current = Number(store.currentPage);
   const delta = 2;
-  const range = [];
+  const range: number[] = [];
 
   for (let i = Math.max(2, current - delta); i <= Math.min(total - 1, current + delta); i++) {
     range.push(i);
   }
 
-  const result = [1];
+  const result: (number | string)[] = [1];
   if (range[0] > 2) result.push('...');
   result.push(...range);
   if (range[range.length - 1] < total - 1) result.push('...');

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import type { Device, DeviceType } from '@/types/device.types';
+import type {Device, DeviceStatus, DeviceType} from '@/types/device.types';
 import { mockDevices } from '@/mocks/devices.mock';
 
 export const useDeviceStore = defineStore('device', () => {
@@ -20,12 +20,10 @@ export const useDeviceStore = defineStore('device', () => {
     const filteredDevices = computed(() => {
         let result = devices.value;
 
-        // Фильтр по типу
         if (selectedType.value) {
             result = result.filter(device => device.type === selectedType.value);
         }
 
-        // Поиск по имени или IP
         if (searchQuery.value) {
             const query = searchQuery.value.toLowerCase();
             result = result.filter(device =>
@@ -99,6 +97,61 @@ export const useDeviceStore = defineStore('device', () => {
         currentPage.value = 1;
     }
 
+    let intervalId: ReturnType<typeof setInterval> | null = null;
+
+    function startRealtimeUpdates() {
+        if (intervalId) clearInterval(intervalId);
+
+        intervalId = setInterval(() => {
+            devices.value = devices.value.map(device => {
+                const random = Math.random();
+                if (random < 0.3) {
+                    const statuses: DeviceStatus[] = ['online', 'offline', 'error'];
+                    const newStatus = statuses[Math.floor(Math.random() * statuses.length)];
+                    return { ...device, status: newStatus, lastSeen: new Date() };
+                }
+                return device;
+            });
+        }, 5000);
+    }
+
+    function stopRealtimeUpdates() {
+        if (intervalId) {
+            clearInterval(intervalId);
+            intervalId = null;
+        }
+    }
+
+    startRealtimeUpdates();
+
+    function generateManyRows() {
+        loading.value = true;
+
+        setTimeout(() => {
+            const types: DeviceType[] = ['switch', 'olt', 'ont'];
+            const statuses: DeviceStatus[] = ['online', 'offline', 'error'];
+
+            const newDevices: Device[] = [];
+            for (let i = 0; i < 100000; i++) {
+                newDevices.push({
+                    id: `generated-${i}`,
+                    type: types[Math.floor(Math.random() * types.length)],
+                    name: `Device ${i}`,
+                    ip: `192.168.${Math.floor(i / 256)}.${i % 256}`,
+                    status: statuses[Math.floor(Math.random() * statuses.length)],
+                    lastSeen: new Date(),
+                    model: `Model ${Math.floor(Math.random() * 100)}`,
+                    firmware: `v${Math.floor(Math.random() * 10)}.${Math.floor(Math.random() * 10)}`,
+                    uptime: Math.floor(Math.random() * 864000),
+                });
+            }
+
+            devices.value = newDevices;
+            loading.value = false;
+            currentPage.value = 1;
+        }, 100);
+    }
+
     return {
         devices,
         loading,
@@ -118,5 +171,9 @@ export const useDeviceStore = defineStore('device', () => {
         setSearchQuery,
         setCurrentPage,
         setItemsPerPage,
+
+        startRealtimeUpdates,
+        stopRealtimeUpdates,
+        generateManyRows,
     };
 });
