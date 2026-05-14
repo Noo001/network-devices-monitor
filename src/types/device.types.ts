@@ -1,4 +1,4 @@
-export type DeviceStatus = 'online' | 'offline' | 'warning';
+export type DeviceStatus = 'online' | 'offline' | 'error';
 
 export type DeviceType = 'switch' | 'olt' | 'ont';
 

@@ -9,6 +9,7 @@
             </svg>
           </div>
           <input
+              v-model="searchQuery"
               type="text"
               placeholder="Введите имя"
               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -76,7 +77,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, watch } from 'vue';
 import DeviceTable from '@/components/DeviceTable.vue';
 import DeviceModal from '@/components/DeviceModal.vue';
 import type {Device, DeviceType} from '@/types/device.types';
@@ -87,6 +88,12 @@ const selectedDevice = ref<Device | null>(null);
 const store = useDeviceStore();
 
 const isTypeMenuOpen = ref(false);
+
+const searchQuery = ref('');
+
+watch(searchQuery, (newValue) => {
+  store.setSearchQuery(newValue);
+});
 
 function selectType(type: DeviceType | '') {
   store.setSelectedType(type);

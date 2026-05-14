@@ -14,6 +14,9 @@ export const useDeviceStore = defineStore('device', () => {
     const currentPage = ref<number>(1);
     const itemsPerPage = ref<number>(10);
 
+    const sortField = ref<keyof Device>('name');
+    const sortOrder = ref<'asc' | 'desc'>('asc');
+
     const filteredDevices = computed(() => {
         let result = devices.value;
 
@@ -41,7 +44,7 @@ export const useDeviceStore = defineStore('device', () => {
     const paginatedDevices = computed(() => {
         const start = (currentPage.value - 1) * itemsPerPage.value;
         const end = start + itemsPerPage.value;
-        return filteredDevices.value.slice(start, end);
+        return sortedDevices.value.slice(start, end);
     });
 
     function setSelectedType(type: DeviceType | '') {
@@ -70,6 +73,32 @@ export const useDeviceStore = defineStore('device', () => {
         currentPage.value = 1;
     }
 
+    const sortedDevices = computed(() => {
+        const result = [...filteredDevices.value];
+        if (sortField.value) {
+            result.sort((a, b) => {
+                let aVal = a[sortField.value];
+                let bVal = b[sortField.value];
+
+                if (sortField.value === 'lastSeen') {
+                    aVal = new Date(aVal).getTime();
+                    bVal = new Date(bVal).getTime();
+                }
+
+                if (aVal < bVal) return sortOrder.value === 'asc' ? -1 : 1;
+                if (aVal > bVal) return sortOrder.value === 'asc' ? 1 : -1;
+                return 0;
+            });
+        }
+        return result;
+    });
+
+    function setSort(field: keyof Device, order: 'asc' | 'desc') {
+        sortField.value = field;
+        sortOrder.value = order;
+        currentPage.value = 1;
+    }
+
     return {
         devices,
         loading,
@@ -84,6 +113,7 @@ export const useDeviceStore = defineStore('device', () => {
         paginatedDevices,
         updateDevice,
 
+        setSort,
         setSelectedType,
         setSearchQuery,
         setCurrentPage,
