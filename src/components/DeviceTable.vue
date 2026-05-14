@@ -26,9 +26,7 @@
       <tbody>
       <tr v-for="device in store.paginatedDevices" :key="device.id" class="border-b hover:bg-gray-50">
         <td class="px-6 py-4 whitespace-nowrap">
-            <span :class="getTypeClass(device.type)">
-              {{ getTypeLabel(device.type) }}
-            </span>
+          {{ getTypeLabel(device.type) }}
         </td>
         <td class="px-6 py-4 whitespace-nowrap">
           {{ device.name }}
