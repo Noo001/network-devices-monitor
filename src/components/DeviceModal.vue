@@ -36,12 +36,14 @@
             <label class="text-sm text-gray-500">Имя</label>
             <div v-if="!isEditing" class="text-gray-900">{{ device.name }}</div>
             <input v-else v-model="editedDevice.name" class="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+            <div v-if="errors.name" class="text-red-500 text-xs mt-1">{{ errors.name }}</div>
           </div>
 
           <div>
             <label class="text-sm text-gray-500">IP-адрес</label>
             <div v-if="!isEditing" class="text-gray-900">{{ device.ip }}</div>
             <input v-else v-model="editedDevice.ip" class="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+            <div v-if="errors.ip" class="text-red-500 text-xs mt-1">{{ errors.ip }}</div>
           </div>
 
           <div>
@@ -58,12 +60,14 @@
             <label class="text-sm text-gray-500">Модель</label>
             <div v-if="!isEditing" class="text-gray-900">{{ device.model }}</div>
             <input v-else v-model="editedDevice.model" class="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+            <div v-if="errors.model" class="text-red-500 text-xs mt-1">{{ errors.model }}</div>
           </div>
 
           <div>
             <label class="text-sm text-gray-500">Прошивка</label>
             <div v-if="!isEditing" class="text-gray-900">{{ device.firmware }}</div>
             <input v-else v-model="editedDevice.firmware" class="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+            <div v-if="errors.firmware" class="text-red-500 text-xs mt-1">{{ errors.firmware }}</div>
           </div>
 
           <div>
@@ -96,7 +100,8 @@
           </button>
           <button
               @click="saveChanges"
-              class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              :disabled="!isFormValid"
+              class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Сохранить
           </button>
@@ -107,7 +112,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import type { Device, DeviceType, DeviceStatus } from '@/types/device.types';
 
 const props = defineProps<{
@@ -122,10 +127,42 @@ const emit = defineEmits<{
 
 const isEditing = ref(false);
 const editedDevice = ref<Partial<Device>>({});
+const errors = ref<{ [key: string]: string }>({});
+
+const isFormValid = computed(() => {
+  return Object.keys(errors.value).length === 0;
+});
+
+function validateForm(): boolean {
+  errors.value = {};
+
+  if (!editedDevice.value.name?.trim()) {
+    errors.value.name = 'Имя обязательно';
+  } else if (editedDevice.value.name.length < 2) {
+    errors.value.name = 'Имя должно содержать минимум 2 символа';
+  }
+
+  if (!editedDevice.value.ip?.trim()) {
+    errors.value.ip = 'IP-адрес обязателен';
+  } else if (!/^(\d{1,3}\.){3}\d{1,3}$/.test(editedDevice.value.ip)) {
+    errors.value.ip = 'Неверный формат IP-адреса';
+  }
+
+  if (!editedDevice.value.model?.trim()) {
+    errors.value.model = 'Модель обязательна';
+  }
+
+  if (!editedDevice.value.firmware?.trim()) {
+    errors.value.firmware = 'Прошивка обязательна';
+  }
+
+  return Object.keys(errors.value).length === 0;
+}
 
 function startEditing() {
   if (props.device) {
     editedDevice.value = { ...props.device };
+    errors.value = {};
     isEditing.value = true;
   }
 }
@@ -133,9 +170,12 @@ function startEditing() {
 function cancelEditing() {
   isEditing.value = false;
   editedDevice.value = {};
+  errors.value = {};
 }
 
 function saveChanges() {
+  if (!validateForm()) return;
+
   if (props.device && editedDevice.value) {
     emit('save', { ...props.device, ...editedDevice.value });
     isEditing.value = false;
@@ -145,6 +185,7 @@ function saveChanges() {
 
 function close() {
   isEditing.value = false;
+  errors.value = {};
   emit('update:visible', false);
 }
 
