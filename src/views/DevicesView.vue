@@ -15,12 +15,44 @@
           />
         </div>
 
-        <button class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-full hover:bg-gray-50">
-          <svg width="14" height="13" viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M5.33309 11.3333C5.33304 11.4572 5.3675 11.5787 5.43262 11.6841C5.49774 11.7895 5.59094 11.8746 5.70176 11.93L7.03509 12.5967C7.13676 12.6475 7.24972 12.6714 7.36326 12.6663C7.47679 12.6612 7.58712 12.6271 7.68378 12.5673C7.78044 12.5075 7.8602 12.424 7.91551 12.3247C7.97081 12.2254 7.99981 12.1137 7.99976 12V7.33333C7.99991 7.00292 8.12274 6.68433 8.34443 6.43933L13.1598 1.11333C13.2461 1.01771 13.3028 0.899122 13.3232 0.771922C13.3435 0.644723 13.3265 0.514355 13.2744 0.396583C13.2222 0.278812 13.137 0.178682 13.0291 0.108301C12.9212 0.0379205 12.7952 0.000303823 12.6664 0H0.666426C0.537498 4.65483e-05 0.411349 0.0374771 0.303259 0.107758C0.19517 0.178038 0.109779 0.278153 0.0574294 0.395975C0.00507957 0.513798 -0.0119828 0.644272 0.00830942 0.771594C0.0286016 0.898916 0.0853774 1.01762 0.17176 1.11333L4.98843 6.43933C5.21012 6.68433 5.33294 7.00292 5.33309 7.33333V11.3333Z" fill="#6B727E"/>
-          </svg>
-          <span>Тип устройства</span>
-        </button>
+        <div class="relative">
+          <button
+              @click="isTypeMenuOpen = !isTypeMenuOpen"
+              class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50"
+          >
+            <svg width="14" height="13" viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5.33309 11.3333C5.33304 11.4572 5.3675 11.5787 5.43262 11.6841C5.49774 11.7895 5.59094 11.8746 5.70176 11.93L7.03509 12.5967C7.13676 12.6475 7.24972 12.6714 7.36326 12.6663C7.47679 12.6612 7.58712 12.6271 7.68378 12.5673C7.78044 12.5075 7.8602 12.424 7.91551 12.3247C7.97081 12.2254 7.99981 12.1137 7.99976 12V7.33333C7.99991 7.00292 8.12274 6.68433 8.34443 6.43933L13.1598 1.11333C13.2461 1.01771 13.3028 0.899122 13.3232 0.771922C13.3435 0.644723 13.3265 0.514355 13.2744 0.396583C13.2222 0.278812 13.137 0.178682 13.0291 0.108301C12.9212 0.0379205 12.7952 0.000303823 12.6664 0H0.666426C0.537498 4.65483e-05 0.411349 0.0374771 0.303259 0.107758C0.19517 0.178038 0.109779 0.278153 0.0574294 0.395975C0.00507957 0.513798 -0.0119828 0.644272 0.00830942 0.771594C0.0286016 0.898916 0.0853774 1.01762 0.17176 1.11333L4.98843 6.43933C5.21012 6.68433 5.33294 7.00292 5.33309 7.33333V11.3333Z" fill="#6B727E"/>
+            </svg>
+            <span>Тип устройства</span>
+          </button>
+
+          <div v-if="isTypeMenuOpen" class="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+            <div
+                @click="selectType('')"
+                class="px-4 py-2 hover:bg-gray-50 cursor-pointer"
+            >
+              Все типы
+            </div>
+            <div
+                @click="selectType('switch')"
+                class="px-4 py-2 hover:bg-gray-50 cursor-pointer"
+            >
+              Коммутатор
+            </div>
+            <div
+                @click="selectType('olt')"
+                class="px-4 py-2 hover:bg-gray-50 cursor-pointer"
+            >
+              OLT
+            </div>
+            <div
+                @click="selectType('ont')"
+                class="px-4 py-2 hover:bg-gray-50 cursor-pointer"
+            >
+              ONT
+            </div>
+          </div>
+        </div>
 
         <button class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -44,15 +76,37 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import DeviceTable from '@/components/DeviceTable.vue';
 import DeviceModal from '@/components/DeviceModal.vue';
-import type { Device } from '@/types/device.types';
+import type {Device, DeviceType} from '@/types/device.types';
 import { useDeviceStore } from '@/stores/device.store';
 
 const modalVisible = ref(false);
 const selectedDevice = ref<Device | null>(null);
 const store = useDeviceStore();
+
+const isTypeMenuOpen = ref(false);
+
+function selectType(type: DeviceType | '') {
+  store.setSelectedType(type);
+  isTypeMenuOpen.value = false;
+}
+
+function handleClickOutside(event: MouseEvent) {
+  const target = event.target as HTMLElement;
+  if (!target.closest('.relative')) {
+    isTypeMenuOpen.value = false;
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
 
 function handleViewDetails(device: Device) {
   selectedDevice.value = device;
