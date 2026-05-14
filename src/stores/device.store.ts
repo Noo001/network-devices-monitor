@@ -58,6 +58,13 @@ export const useDeviceStore = defineStore('device', () => {
         currentPage.value = page;
     }
 
+    function updateDevice(device: Device) {
+        const index = devices.value.findIndex(dev => dev.id === device.id);
+        if(index > -1) {
+            devices.value[index] = {...device};
+        }
+    }
+
     function setItemsPerPage(perPage: number) {
         itemsPerPage.value = perPage;
         currentPage.value = 1;
@@ -75,6 +82,7 @@ export const useDeviceStore = defineStore('device', () => {
         filteredDevices,
         totalPages,
         paginatedDevices,
+        updateDevice,
 
         setSelectedType,
         setSearchQuery,

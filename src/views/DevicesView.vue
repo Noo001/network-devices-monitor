@@ -38,6 +38,7 @@
     <DeviceModal
         v-model:visible="modalVisible"
         :device="selectedDevice"
+        @save="handleSaveDevice"
     />
   </div>
 </template>
@@ -47,12 +48,18 @@ import { ref } from 'vue';
 import DeviceTable from '@/components/DeviceTable.vue';
 import DeviceModal from '@/components/DeviceModal.vue';
 import type { Device } from '@/types/device.types';
+import { useDeviceStore } from '@/stores/device.store';
 
 const modalVisible = ref(false);
 const selectedDevice = ref<Device | null>(null);
+const store = useDeviceStore();
 
 function handleViewDetails(device: Device) {
   selectedDevice.value = device;
   modalVisible.value = true;
+}
+
+function handleSaveDevice(updatedDevice: Device) {
+  store.updateDevice(updatedDevice);
 }
 </script>
