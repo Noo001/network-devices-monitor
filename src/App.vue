@@ -1,14 +1,7 @@
 <template>
-  <div class="min-h-screen bg-gray-100">
-    <header class="bg-white shadow">
-      <div class="max-w-7xl mx-auto py-6 px-4">
-        <h1 class="text-3xl font-bold text-red-500">
-          Сетевые устройства
-        </h1>
-      </div>
-    </header>
+  <div class="min-h-screen font-nunito" style="background-color: #FAFBFF">
     <main>
-      <div class="max-w-7xl mx-auto py-6 px-4">
+      <div class="mx-auto">
         <router-view />
       </div>
     </main>

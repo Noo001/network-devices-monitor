@@ -1,30 +1,30 @@
 <template>
-  <div class="overflow-x-auto">
-    <table class="min-w-full bg-white border border-gray-200">
+  <div class="w-full font-nunito text-sm rounded-lg">
+    <table class="min-w-full border-collapse">
       <thead>
-      <tr class="bg-gray-50 border-b">
-        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+      <tr class="border-b " style="border-bottom: 1px solid #E1E5EA59">
+        <th class="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider">
           Тип
         </th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        <th class="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider">
           Имя
         </th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        <th class="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider">
           IP-адрес
         </th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        <th class="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider">
           Статус
         </th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        <th class="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider">
           Последнее появление
         </th>
-        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        <th class="px-6 py-3 text-left text-sm font-medium text-gray-500 tracking-wider">
           Действия
         </th>
       </tr>
       </thead>
       <tbody>
-      <tr v-for="device in store.paginatedDevices" :key="device.id" class="border-b hover:bg-gray-50">
+      <tr v-for="device in store.paginatedDevices" :key="device.id" class="border-b hover:bg-[#F4F7FF]" style="border-bottom: 1px solid #E1E5EA59">
         <td class="px-6 py-4 whitespace-nowrap">
           {{ getTypeLabel(device.type) }}
         </td>
@@ -45,7 +45,7 @@
         <td class="px-6 py-4 whitespace-nowrap">
           <button
               @click="$emit('view-details', device)"
-              class="text-blue-600 hover:text-blue-800"
+              class="text-blue-600 hover:text-blue-800 cursor-pointer"
           >
             Подробнее
           </button>
